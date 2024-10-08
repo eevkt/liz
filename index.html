@@ -3,17 +3,115 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PowerShell to EXE Converter</title>
-    <link rel="stylesheet" href="style.css">
+    <title>EXE to PowerShell Converter</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #2e2e2e;
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+        .container {
+            margin-top: 50px;
+        }
+        .file-input, .output-box, .buttons {
+            margin-top: 20px;
+        }
+        .code-snippet {
+            background-color: #1e1e1e;
+            padding: 10px;
+            border-radius: 5px;
+            white-space: pre-wrap;
+            overflow-wrap: break-word;
+        }
+        button {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            padding: 10px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+    </style>
 </head>
 <body>
-    <div class="container">
-        <h1>PowerShell to EXE Converter</h1>
-        <textarea id="powershellInput" placeholder="Enter your PowerShell script here..."></textarea>
-        <button id="convertButton">Convert to EXE</button>
-        <div id="output"></div>
+
+<div class="container">
+    <h1>EXE to PowerShell Code Converter</h1>
+    <div class="file-input">
+        <input type="file" id="exeFile" accept=".exe" />
     </div>
 
-    <script src="app.js"></script>
+    <div class="output-box">
+        <h2>Generated PowerShell Code</h2>
+        <div id="codeSnippet" class="code-snippet"></div>
+        <button id="showFullCodeBtn">Show Full Code</button>
+    </div>
+
+    <div class="buttons">
+        <button id="copyCodeBtn">Copy Full Code</button>
+        <button id="downloadPS1Btn">Download as .ps1</button>
+    </div>
+
+    <div id="instructions" style="margin-top: 20px;">
+        <p><strong>Instructions:</strong></p>
+        <p>1. Upload your .exe file.</p>
+        <p>2. Click "Download as .ps1" to get the PowerShell script.</p>
+        <p>3. Save the .ps1 file in the same directory as your .exe file.</p>
+        <p>4. Run the PowerShell script by right-clicking and selecting "Run with PowerShell".</p>
+    </div>
+</div>
+
+<script>
+    document.getElementById("exeFile").addEventListener("change", handleFile);
+    document.getElementById("showFullCodeBtn").addEventListener("click", showFullCode);
+    document.getElementById("copyCodeBtn").addEventListener("click", copyToClipboard);
+    document.getElementById("downloadPS1Btn").addEventListener("click", downloadPS1);
+
+    let generatedCode = "";
+
+    function handleFile(event) {
+        const file = event.target.files[0];
+        if (file) {
+            const fileName = file.name;
+            // Generate PowerShell code to run the EXE
+            generatedCode = `# PowerShell Script to run ${fileName}\n`;
+            generatedCode += `# Ensure the EXE file is in the same directory as this script\n`;
+            generatedCode += `$exePath = Join-Path -Path (Get-Location) -ChildPath "${fileName}"\n`;
+            generatedCode += `Start-Process -FilePath $exePath -Wait\n`;
+
+            // Show a truncated version of the code
+            document.getElementById("codeSnippet").innerText = generatedCode.substring(0, 50) + "...";
+        }
+    }
+
+    function showFullCode() {
+        document.getElementById("codeSnippet").innerText = generatedCode;
+    }
+
+    function copyToClipboard() {
+        const textArea = document.createElement("textarea");
+        textArea.value = generatedCode;
+        document.body.appendChild(textArea);
+        textArea.select();
+        document.execCommand("copy");
+        document.body.removeChild(textArea);
+        alert("PowerShell code copied to clipboard!");
+    }
+
+    function downloadPS1() {
+        const blob = new Blob([generatedCode], { type: "application/octet-stream" });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        link.href = url;
+        link.download = "script.ps1";
+        link.click();
+    }
+</script>
+
 </body>
 </html>
