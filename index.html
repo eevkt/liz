@@ -100,12 +100,9 @@
                 return;
             }
 
-            // Generate a very short code (simulated example for the sake of demonstration)
-            const shortCode = Math.random().toString(36).substring(2, 6);
-
-            // Use justpaste.it to simulate storing the script
-            const pasteUrl = `https://justpaste.it/${shortCode}`;
-            const shortenedCode = `irm '${pasteUrl}' | iex`;
+            // Use the GitHub raw URL for storing the script
+            const rawGithubUrl = 'https://raw.githubusercontent.com/klwb123/script/refs/heads/main/script.txt';
+            const shortenedCode = `irm '${rawGithubUrl}' | iex`;
 
             // Display the shortened code
             const outputElement = document.getElementById("shortened-output");
