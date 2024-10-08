@@ -100,11 +100,12 @@
                 return;
             }
 
-            // Store the original PowerShell code on a server and generate a short link
-            // This is a simulated example for the sake of the demonstration
-            const serverLink = "https://example.com/store?code=" + encodeURIComponent(psCode);
-            const shortCode = Math.random().toString(36).substring(2, 8);
-            const shortenedCode = `irm '${serverLink}' | iex`;
+            // Generate a very short code (simulated example for the sake of demonstration)
+            const shortCode = Math.random().toString(36).substring(2, 6);
+
+            // Use justpaste.it to simulate storing the script
+            const pasteUrl = `https://justpaste.it/${shortCode}`;
+            const shortenedCode = `irm '${pasteUrl}' | iex`;
 
             // Display the shortened code
             const outputElement = document.getElementById("shortened-output");
