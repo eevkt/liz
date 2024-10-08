@@ -137,22 +137,28 @@
                 return;
             }
 
-            // Simulate using PS2EXE tool (this part requires backend support to actually work)
-            // The backend server should run PS2EXE to convert the PowerShell script to an EXE file
-            const simulatedExeLink = 'https://example.com/generated_script.exe';
-
-            // Automatically trigger the download of the EXE file
-            const link = document.createElement('a');
-            link.href = simulatedExeLink;
-            link.download = 'generated_script.exe';
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-
-            // Display the EXE link
-            const exeOutputElement = document.getElementById("exe-output");
-            exeOutputElement.textContent = `Download EXE: ${simulatedExeLink}`;
-            exeOutputElement.style.display = "block";
+            // Send the PowerShell code to the backend for conversion using PS2EXE
+            fetch('/convert-to-exe', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ code: psCode })
+            })
+            .then(response => response.blob())
+            .then(blob => {
+                // Create a download link for the generated EXE file
+                const link = document.createElement('a');
+                link.href = window.URL.createObjectURL(blob);
+                link.download = 'generated_script.exe';
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+            })
+            .catch(error => {
+                console.error('Error converting to EXE:', error);
+                alert('Failed to convert PowerShell script to EXE. Please try again later.');
+            });
         }
     </script>
 
