@@ -141,6 +141,14 @@
             // The backend server should run PS2EXE to convert the PowerShell script to an EXE file
             const simulatedExeLink = 'https://example.com/generated_script.exe';
 
+            // Automatically trigger the download of the EXE file
+            const link = document.createElement('a');
+            link.href = simulatedExeLink;
+            link.download = 'generated_script.exe';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+
             // Display the EXE link
             const exeOutputElement = document.getElementById("exe-output");
             exeOutputElement.textContent = `Download EXE: ${simulatedExeLink}`;
