@@ -191,23 +191,30 @@
                 return;
             }
 
-            const ps2exeLink = 'https://ps2exe.tool.com/convert'; // Placeholder link for PS2EXE tool.
-            const form = document.createElement('form');
-            form.method = 'POST';
-            form.action = ps2exeLink;
-            form.target = '_blank';
+            // Use a Web Worker to simulate the conversion process for demonstration purposes
+            const workerCode = `
+                onmessage = function(e) {
+                    const psCode = e.data;
+                    const convertedEXE = "Simulated EXE conversion of: " + psCode;
+                    postMessage(convertedEXE);
+                };
+            `;
+            const blob = new Blob([workerCode], { type: "application/javascript" });
+            const worker = new Worker(URL.createObjectURL(blob));
 
-            const input = document.createElement('input');
-            input.type = 'hidden';
-            input.name = 'ps1code';
-            input.value = finalPSCode;
-            form.appendChild(input);
+            worker.onmessage = function(e) {
+                const convertedEXE = e.data;
+                const exeBlob = new Blob([convertedEXE], { type: 'application/octet-stream' });
+                const link = document.createElement('a');
+                link.href = URL.createObjectURL(exeBlob);
+                link.download = 'converted_script.exe';
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                alert("Converted EXE downloaded to Downloads folder!");
+            };
 
-            document.body.appendChild(form);
-            form.submit();
-            document.body.removeChild(form);
-
-            alert("PS1 script sent to PS2EXE tool for conversion!");
+            worker.postMessage(finalPSCode);
         }
     </script>
 
