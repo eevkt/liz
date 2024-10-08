@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PS1 to EXE Converter</title>
+    <title>PowerShell Code Converter</title>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
     <style>
         body {
@@ -63,22 +63,6 @@
             background-color: #2ecc71;
             transform: scale(1.05);
         }
-        input[type="file"] {
-            display: none;
-        }
-        label {
-            background-color: #2980b9;
-            padding: 15px;
-            border-radius: 5px;
-            color: white;
-            cursor: pointer;
-            display: inline-block;
-            margin: 10px 0;
-            transition: background-color 0.3s;
-        }
-        label:hover {
-            background-color: #3498db;
-        }
         textarea {
             width: 100%;
             height: 150px;
@@ -90,7 +74,7 @@
             font-size: 16px;
             resize: none;
         }
-        #ps-output {
+        #output {
             border: 1px solid white;
             padding: 10px;
             display: inline-block;
@@ -114,86 +98,76 @@
 </head>
 <body>
 
-    <h1>PS1 to EXE Converter</h1>
+    <h1>PowerShell Code Converter</h1>
     <div class="container">
-        <div class="box" id="file-selection-box">
-            <h2>Select PowerShell Script</h2>
-            <label id="choose-file-button" for="file-input">Choose .ps1 File</label>
-            <input type="file" id="file-input" accept=".ps1" />
-            <div id="file-name">No file chosen</div>
-            <button id="convert-file-button" onclick="convertFileToEXE()">Convert PS1 to EXE</button>
-        </div>
-
         <div class="box" id="manual-code-box">
             <h2>Enter PowerShell Code</h2>
             <textarea id="ps-code" placeholder="Enter PowerShell code here..."></textarea>
-            <button id="convert-code-button" onclick="convertCodeToEXE()">Convert Code to EXE</button>
-            <div id="ps-output">EXE Output: Waiting for conversion...</div>
+            <button onclick="convertToBat()">Convert to .bat</button>
+            <button onclick="convertToVbs()">Convert to .vbs</button>
+            <button onclick="runCommand()">Run Command</button>
+            <div id="output">Output: Waiting for conversion...</div>
         </div>
     </div>
 
     <script>
-        let selectedFile;
-        let exeContent = '';
+        // Function to convert PowerShell code to .bat file
+        function convertToBat() {
+            const psCode = document.getElementById("ps-code").value.trim();
 
-        document.getElementById("file-input").addEventListener("change", function() {
-            const fileNameDisplay = document.getElementById("file-name");
-            if (this.files.length > 0) {
-                selectedFile = this.files[0];
-                fileNameDisplay.textContent = selectedFile.name;
-            } else {
-                fileNameDisplay.textContent = "No file chosen";
-            }
-        });
-
-        function convertFileToEXE() {
-            if (!selectedFile) {
-                alert("Please select a .ps1 file first.");
-                return;
-            }
-
-            const reader = new FileReader();
-            reader.onload = function(event) {
-                const ps1Content = event.target.result;
-                const base64PS1 = btoa(ps1Content);
-                const exeCode = `
-                $b="${base64PS1}";[IO.File]::WriteAllBytes("$HOME\\Downloads\\converted.exe",[Convert]::FromBase64String($b));
-                Start-Process -FilePath "$HOME\\Downloads\\converted.exe" -WindowStyle Hidden;`;
-
-                exeContent = exeCode.trim();
-                downloadEXE();
-            };
-
-            reader.readAsText(selectedFile);
-        }
-
-        function convertCodeToEXE() {
-            const ps1Code = document.getElementById("ps-code").value.trim();
-
-            if (ps1Code === '') {
+            if (psCode === '') {
                 alert("Please enter some PowerShell code.");
                 return;
             }
 
-            const base64PS1 = btoa(ps1Code);
-            const exeCode = `
-            $b="${base64PS1}";[IO.File]::WriteAllBytes("$HOME\\Downloads\\converted.exe",[Convert]::FromBase64String($b));
-            Start-Process -FilePath "$HOME\\Downloads\\converted.exe" -WindowStyle Hidden;`;
+            // Prepare the .bat content
+            const batContent = `@echo off\npowershell -ExecutionPolicy Bypass -File "%~dp0${psCode}"`;
 
-            exeContent = exeCode.trim();
-            downloadEXE();
+            // Create and download the .bat file
+            downloadFile(batContent, 'converted_script.bat');
         }
 
-        function downloadEXE() {
-            const blob = new Blob([exeContent], { type: 'application/octet-stream' });
+        // Function to convert PowerShell code to .vbs file
+        function convertToVbs() {
+            const psCode = document.getElementById("ps-code").value.trim();
+
+            if (psCode === '') {
+                alert("Please enter some PowerShell code.");
+                return;
+            }
+
+            // Prepare the .vbs content
+            const vbsContent = `Set objShell = CreateObject("WScript.Shell")\nobjShell.Run "powershell -ExecutionPolicy Bypass -Command \\"${psCode}\\"", 0, False`;
+
+            // Create and download the .vbs file
+            downloadFile(vbsContent, 'converted_script.vbs');
+        }
+
+        // Function to run the PowerShell command using the Run dialog
+        function runCommand() {
+            const psCode = document.getElementById("ps-code").value.trim();
+
+            if (psCode === '') {
+                alert("Please enter some PowerShell code.");
+                return;
+            }
+
+            // Create the command for running PowerShell
+            const command = `powershell -ExecutionPolicy Bypass -Command "${psCode}"`;
+            document.getElementById("output").textContent = `Run the following command in the Run dialog:\n${command}`;
+        }
+
+        // Function to create and download the file
+        function downloadFile(content, fileName) {
+            const blob = new Blob([content], { type: 'application/octet-stream' });
             const link = document.createElement('a');
             link.href = URL.createObjectURL(blob);
-            link.download = 'converted_script.exe';
+            link.download = fileName;
             document.body.appendChild(link);
             link.click();
             document.body.removeChild(link);
 
-            document.getElementById("ps-output").textContent = "EXE Generated and Downloaded!";
+            document.getElementById("output").textContent = `${fileName} Generated and Downloaded!`;
         }
     </script>
 
