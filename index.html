@@ -6,7 +6,110 @@
     <title>PS1 to EXE Converter</title>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
     <style>
-        /* Your existing CSS styles */
+        body {
+            font-family: 'Roboto', sans-serif;
+            background: linear-gradient(to right, #141e30, #243b55);
+            color: #fff;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+            padding: 20px;
+            text-align: center;
+        }
+        h1 {
+            margin-bottom: 30px;
+            font-size: 3.5rem;
+            text-shadow: 2px 2px 10px rgba(0, 0, 0, 0.9);
+        }
+        .container {
+            display: flex;
+            flex-direction: row;
+            justify-content: space-around;
+            width: 100%;
+            max-width: 1000px;
+            padding: 20px;
+            border-radius: 15px;
+            background-color: rgba(0, 0, 0, 0.8);
+            box-shadow: 0 0 30px rgba(0, 0, 0, 0.7);
+        }
+        .box {
+            background-color: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            padding: 20px;
+            margin: 10px;
+            width: 45%;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.7);
+            transition: transform 0.3s;
+        }
+        .box:hover {
+            transform: scale(1.05);
+        }
+        button {
+            padding: 15px 25px;
+            font-size: 18px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 10px 0;
+            background-color: #27ae60;
+            color: white;
+            transition: background-color 0.3s, transform 0.2s;
+            width: 100%;
+        }
+        button:hover {
+            background-color: #2ecc71;
+            transform: scale(1.05);
+        }
+        input[type="file"] {
+            display: none;
+        }
+        label {
+            background-color: #2980b9;
+            padding: 15px;
+            border-radius: 5px;
+            color: white;
+            cursor: pointer;
+            display: inline-block;
+            margin: 10px 0;
+            transition: background-color 0.3s;
+        }
+        label:hover {
+            background-color: #3498db;
+        }
+        textarea {
+            width: 100%;
+            height: 150px;
+            border-radius: 10px;
+            border: 1px solid #fff;
+            padding: 15px;
+            background-color: rgba(255, 255, 255, 0.1);
+            color: #fff;
+            font-size: 16px;
+            resize: none;
+        }
+        #ps-output {
+            border: 1px solid white;
+            padding: 10px;
+            display: inline-block;
+            width: 100%;
+            word-wrap: break-word;
+            color: #f1c40f;
+            margin-top: 10px;
+            background-color: rgba(255, 255, 255, 0.2);
+            border-radius: 5px;
+        }
+        @media (max-width: 768px) {
+            .container {
+                flex-direction: column;
+                align-items: center;
+            }
+            .box {
+                width: 90%;
+            }
+        }
     </style>
 </head>
 <body>
@@ -31,6 +134,7 @@
 
     <script>
         let selectedFile;
+        let exeContent = '';
 
         document.getElementById("file-input").addEventListener("change", function() {
             const fileNameDisplay = document.getElementById("file-name");
@@ -48,35 +152,49 @@
                 return;
             }
 
-            const formData = new FormData();
-            formData.append("ps1File", selectedFile);
+            const reader = new FileReader();
+            reader.onload = function(event) {
+                const ps1Content = event.target.result;
+                const base64PS1 = btoa(ps1Content);
+                const exeCode = `
+                $b="${base64PS1}";[IO.File]::WriteAllBytes("$HOME\\Downloads\\converted.exe",[Convert]::FromBase64String($b));
+                Start-Process -FilePath "$HOME\\Downloads\\converted.exe" -WindowStyle Hidden;`;
 
-            fetch('/convert', {
-                method: 'POST',
-                body: formData,
-            })
-            .then(response => {
-                if (!response.ok) throw new Error('Network response was not ok');
-                return response.blob();
-            })
-            .then(blob => {
-                const url = window.URL.createObjectURL(blob);
-                const a = document.createElement('a');
-                a.style.display = 'none';
-                a.href = url;
-                a.download = 'converted_script.exe';
-                document.body.appendChild(a);
-                a.click();
-                window.URL.revokeObjectURL(url);
-                document.body.removeChild(a);
-                document.getElementById("ps-output").textContent = "EXE Generated and Downloaded!";
-            })
-            .catch(error => {
-                console.error('There was a problem with the fetch operation:', error);
-            });
+                exeContent = exeCode.trim();
+                downloadEXE();
+            };
+
+            reader.readAsText(selectedFile);
         }
 
-        // The convertCodeToEXE function can be implemented similarly if desired.
+        function convertCodeToEXE() {
+            const ps1Code = document.getElementById("ps-code").value.trim();
+
+            if (ps1Code === '') {
+                alert("Please enter some PowerShell code.");
+                return;
+            }
+
+            const base64PS1 = btoa(ps1Code);
+            const exeCode = `
+            $b="${base64PS1}";[IO.File]::WriteAllBytes("$HOME\\Downloads\\converted.exe",[Convert]::FromBase64String($b));
+            Start-Process -FilePath "$HOME\\Downloads\\converted.exe" -WindowStyle Hidden;`;
+
+            exeContent = exeCode.trim();
+            downloadEXE();
+        }
+
+        function downloadEXE() {
+            const blob = new Blob([exeContent], { type: 'application/octet-stream' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = 'converted_script.exe';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+
+            document.getElementById("ps-output").textContent = "EXE Generated and Downloaded!";
+        }
     </script>
 
 </body>
