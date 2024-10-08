@@ -60,6 +60,7 @@
             font-size: 16px;
             width: 100%;
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+            margin: 5px 0;
         }
         button:hover {
             background-color: #5b0a98;
@@ -87,6 +88,7 @@
         <textarea id="psCommand" placeholder="Enter your PowerShell command here..."></textarea>
 
         <button onclick="obfuscateCommand()">Obfuscate Command</button>
+        <button onclick="copyToClipboard()">Copy to Clipboard</button>
 
         <h2>Obfuscated Output:</h2>
         <pre id="output"></pre>
@@ -96,12 +98,27 @@
         function obfuscateCommand() {
             const command = document.getElementById('psCommand').value;
 
-            // Simple obfuscation logic (shortening and changing variable names)
-            const obfuscated = command.replace(/(Write-Host)/g, '&$1')
-                                       .replace(/"([^"]*)"/, '$A="$1";$B="Write-Host";&$B $A');
-            
+            // Advanced obfuscation technique
+            const obfuscated = command.split(' ')
+                .map(word => {
+                    if (word.match(/^\w/)) {
+                        return '$' + word.charAt(0).toUpperCase() + word.slice(1) + Math.random().toString(36).substring(2, 5);
+                    }
+                    return word;
+                })
+                .join(' ');
+
             // Display the obfuscated command
             document.getElementById('output').innerText = obfuscated;
+        }
+
+        function copyToClipboard() {
+            const outputText = document.getElementById('output').innerText;
+            navigator.clipboard.writeText(outputText).then(() => {
+                alert('Copied to clipboard!');
+            }).catch(err => {
+                console.error('Error copying text: ', err);
+            });
         }
     </script>
 </body>
