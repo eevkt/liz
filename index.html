@@ -145,7 +145,12 @@
                 },
                 body: JSON.stringify({ code: psCode })
             })
-            .then(response => response.blob())
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.blob();
+            })
             .then(blob => {
                 // Create a download link for the generated EXE file
                 const link = document.createElement('a');
