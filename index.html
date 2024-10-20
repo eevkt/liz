@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>موقع دراسي</title>
+    <link rel="icon" href="https://raw.githubusercontent.com/klwb123/conv/main/IMG_5386.png">
     <style>
         /* General Styles */
         body {
@@ -15,8 +16,30 @@
             display: flex;
             flex-direction: column;
             min-height: 100vh;
+            overflow-x: hidden;
+            scroll-behavior: smooth;
         }
-        
+
+        /* Dynamic Background Animation */
+        body::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: radial-gradient(circle, rgba(0,0,0,0.1), transparent);
+            z-index: -1;
+            animation: pulse 10s infinite;
+        }
+
+        @keyframes pulse {
+            0% { background-size: 100% 100%; }
+            50% { background-size: 120% 120%; }
+            100% { background-size: 100% 100%; }
+        }
+
+        /* Parallax Scrolling Effect */
         header {
             display: flex;
             justify-content: space-between;
@@ -24,6 +47,8 @@
             align-items: center;
             background-color: #111;
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+            background-attachment: fixed;
+            z-index: 100;
         }
 
         header img {
@@ -31,24 +56,55 @@
             height: auto;
         }
 
+        /* Typing Header Animation */
         h1 {
             font-size: 2.5rem;
             margin: 0;
             color: #00d9ff;
             letter-spacing: 2px;
+            white-space: nowrap;
+            overflow: hidden;
+            border-right: 3px solid;
+            width: 20ch;
+            animation: typing 4s steps(20) 1s 1 normal both, blink .75s step-end infinite;
         }
 
-        /* Container and Buttons */
-        .container {
-            flex-grow: 1;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 20px;
-            padding: 50px 20px;
+        @keyframes typing {
+            from { width: 0 }
+            to { width: 20ch }
         }
 
+        @keyframes blink {
+            from, to { border-color: transparent }
+            50% { border-color: #00d9ff }
+        }
+
+        /* Theme Toggle */
+        .theme-toggle {
+            cursor: pointer;
+            font-size: 1.5rem;
+            color: #00d9ff;
+        }
+
+        /* Tooltip on Hover */
+        .button {
+            position: relative;
+        }
+
+        .button:hover::after {
+            content: attr(data-tooltip);
+            position: absolute;
+            top: -30px;
+            right: 0;
+            background-color: #333;
+            color: #fff;
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-size: 0.9rem;
+            white-space: nowrap;
+        }
+
+        /* Buttons with Ripple Effect */
         .button {
             background-color: #00d9ff;
             color: #000;
@@ -64,6 +120,23 @@
             overflow: hidden;
         }
 
+        .button::before {
+            content: '';
+            position: absolute;
+            width: 300%;
+            height: 300%;
+            background: rgba(255, 255, 255, 0.15);
+            top: 50%;
+            left: 50%;
+            transition: 0.6s ease-out;
+            transform: translate(-50%, -50%) scale(0);
+            border-radius: 50%;
+        }
+
+        .button:active::before {
+            transform: translate(-50%, -50%) scale(1);
+        }
+
         .button:hover {
             background-color: #fff;
             color: #00d9ff;
@@ -76,21 +149,31 @@
             color: inherit;
         }
 
-        /* Button Animation Effects */
-        .button::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -50%;
-            width: 200%;
-            height: 100%;
-            background: linear-gradient(120deg, transparent, rgba(255, 255, 255, 0.4), transparent);
-            transition: all 0.4s ease;
-            transform: skewX(-30deg);
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #111;
+        }
+        ::-webkit-scrollbar-thumb {
+            background-color: #00d9ff;
+            border-radius: 10px;
         }
 
-        .button:hover::before {
-            left: 150%;
+        /* Scroll-to-Top Button */
+        #scrollTopBtn {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background-color: #00d9ff;
+            color: #000;
+            border: none;
+            padding: 10px 20px;
+            font-size: 1.2rem;
+            cursor: pointer;
+            display: none;
+            border-radius: 10px;
         }
 
         /* Footer */
@@ -103,24 +186,20 @@
             margin-top: auto;
         }
 
-        /* Mobile Responsive */
-        @media (max-width: 768px) {
-            h1 {
-                font-size: 2rem;
-            }
-            .button {
-                padding: 15px 30px;
-                font-size: 1rem;
-            }
+        /* Footer Social Media Icons */
+        .social-icons {
+            margin-top: 10px;
         }
 
-        @media (max-width: 480px) {
-            .container {
-                padding: 30px 10px;
-            }
-            .button {
-                width: 100%;
-            }
+        .social-icons i {
+            font-size: 1.5rem;
+            margin: 0 10px;
+            color: #00d9ff;
+            transition: transform 0.3s ease;
+        }
+
+        .social-icons i:hover {
+            transform: scale(1.3);
         }
     </style>
 </head>
@@ -128,28 +207,76 @@
 
 <header>
     <h1>المواد الدراسية</h1>
-    <img src="https://raw.githubusercontent.com/klwb123/conv/main/IMG_5386.png" alt="Logo">
+    <div>
+        <img src="https://raw.githubusercontent.com/klwb123/conv/main/IMG_5386.png" alt="Logo">
+        <span class="theme-toggle" onclick="toggleTheme()">🌓</span>
+    </div>
 </header>
 
 <div class="container">
-    <button class="button">
+    <button class="button" data-tooltip="فتح تطبيقات الحاسوب">
         <a href="https://vocational.edu.iq/wp-content/uploads/2024/01/%D8%AA%D8%B7%D8%A8%D9%8A%D9%82%D8%A7%D8%AA-%D8%A7%D9%84%D8%AD%D8%A7%D8%B3%D9%88%D8%A8-%D8%A7%D9%84%D8%A7%D9%88%D9%84-2023.pdf" target="_blank">تطبيقات الحاسوب</a>
     </button>
-    <button class="button">
+    <button class="button" data-tooltip="فتح مبادئ الاتصال والشبكات">
         <a href="https://vocational.edu.iq/uploads/pdf/computer/1/1/511cc.pdf" target="_blank">مبادئ الاتصال والشبكات</a>
     </button>
-    <button class="button">
+    <button class="button" data-tooltip="فتح تجميع الحاسوب">
         <a href="https://vocational.edu.iq/uploads/pdf/computer/1/1/511dd.pdf" target="_blank">تجميع الحاسوب</a>
     </button>
-    <button class="button">الطبيعيات</button>
-    <button class="button">اللغة العربية</button>
-    <button class="button">اللغة الانكليزية</button>
-    <button class="button">الرياضيات</button>
+    <button class="button" data-tooltip="مادة الطبيعيات">الطبيعيات</button>
+    <button class="button" data-tooltip="مادة اللغة العربية">اللغة العربية</button>
+    <button class="button" data-tooltip="مادة اللغة الانكليزية">اللغة الانكليزية</button>
+    <button class="button" data-tooltip="مادة الرياضيات">الرياضيات</button>
+</div>
+
+<div class="visitor-counter">
+    عدد الزوار: <span id="visitorCount">0</span>
 </div>
 
 <footer>
     <p>&copy; 2024 موقع دراسي - كل الحقوق محفوظة لدكتور وليد</p>
+    <div class="social-icons">
+        <i class="fab fa-facebook"></i>
+        <i class="fab fa-twitter"></i>
+        <i class="fab fa-linkedin"></i>
+    </div>
 </footer>
 
+<!-- Scroll to Top Button -->
+<button id="scrollTopBtn" onclick="scrollToTop()">⬆️</button>
+
+<script>
+    // Visitor Counter Logic
+    if (localStorage.getItem('visitCount')) {
+        localStorage.setItem('visitCount', Number(localStorage.getItem('visitCount')) + 1);
+    } else {
+        localStorage.setItem('visitCount', 1);
+    }
+    document.getElementById('visitorCount').textContent = localStorage.getItem('visitCount');
+
+    // Scroll-to-Top Button Logic
+    window.onscroll = function() {
+        if (document.body.scrollTop > 100 || document.documentElement.scrollTop > 100) {
+            document.getElementById('scrollTopBtn').style.display = "block";
+        } else {
+            document.getElementById('scrollTopBtn').style.display = "none";
+        }
+    };
+
+    function scrollToTop() {
+        document.body.scrollTop = 0;
+        document.documentElement.scrollTop = 0;
+    }
+
+    // Dark/Light Theme Toggle
+    function toggleTheme() {
+        document.body.classList.toggle('light-theme');
+    }
+
+    // Loading Spinner (Add if you have longer loading content)
+    window.onload = function() {
+        document.body.classList.add('fade-in');
+    };
+</script>
 </body>
 </html>
